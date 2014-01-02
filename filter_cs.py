@@ -106,10 +106,16 @@ def filter_cs(cs, desc_file):
     
     wc_matrix_trans = numpy.array(wc_matrix).transpose()
     cs_list = [cs, 'EOF']
+
+    mean_threshold = 0.0
+    std_threshold = 10.0
+
+    print '-' * 20
     for _cs, wc_row in zip(cs_list, wc_matrix_trans):
         print 'mean:', numpy.mean(wc_row)
         print 'std:', numpy.std(wc_row)
         print _cs.encode('GBK')
+        print numpy.std(wc_row) < std_threshold
 
     return True
 
@@ -129,5 +135,4 @@ if __name__ == '__main__':
     cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
 
     for value in cs_list_sorted: 
-        print '----------------------------------'
         filter_cs(value, './data/{0}.txt'.format(site_id))
