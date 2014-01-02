@@ -70,9 +70,12 @@ class LCS(object):
                 continue
 
             j = i + 1
-            while j <= len(self.suffix_array.height_array):
+            while j < len(self.suffix_array.height_array):
+
                 if self.suffix_array.height_array[j] < k:
                     break
+
+                j += 1
 
             if j - i + 1 >= len(self.seq_list) * threshold:
                 potential_sa.append((i, j))
