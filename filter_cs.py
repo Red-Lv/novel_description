@@ -110,8 +110,8 @@ def filter_cs(cs, desc_file):
     mean_threshold = 0.0
     std_threshold = 10.0
 
-    print '-' * 20
     for _cs, wc_row in zip(cs_list, wc_matrix_trans):
+        print '-' * 20
         print 'mean:', numpy.mean(wc_row)
         print 'std:', numpy.std(wc_row)
         print _cs.encode('GBK')
