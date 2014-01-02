@@ -87,15 +87,15 @@ def sample_description(site_id, sample_size):
         hp_ex.feed(data)
 
         data = u''.join(hp_ex.data)
-        data = data.replace(u'\u00a0', u'\u0020')
+        data = data.replace(u'\u00a0', u'\u0009')
 
-        data = re.sub(u'\s+', ' ', data)
+        data = re.sub(u'\s+', u'\u0020', data)
         data = data.strip()
 
-        if not raw_book_name:
+        if raw_book_name:
             data = data.replace(raw_book_name, u'\u0003')
 
-        if not raw_pen_name:
+        if raw_pen_name:
             data = data.replace(raw_book_name, u'\u0004')
 
         sys.stdout.write('{0}\n'.format(data.encode('GBK', 'ignore')))
