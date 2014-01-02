@@ -1,17 +1,20 @@
 #! /bin/env python
 #! -*-coding:GBK-*-
 
+__author__ = 'lvleibing01'
+
 import re
 import sys
 import numpy
 
-def fetch_site_cs(file):
+
+def fetch_site_cs(cs_file):
     """
     """
 
     site_cs_dict = {}
     site_id = None
-    with open(file) as fp:
+    with open(cs_file) as fp:
         for line in fp:
             
             line = line.strip()
@@ -19,29 +22,31 @@ def fetch_site_cs(file):
                 continue
             
             if line[:7] == 'site_id':
-                site_id = int(line[line.find('.')+1:])
+                site_id = int(line[line.find(':')+1:].strip())
                 site_cs_dict[site_id] = []
                 continue
             
             if re.match(r'\d+', line):
                 continue
             
-            line = unicode(line, 'GBK')
+            line = unicode(line, 'GBK', 'ignore')
             line = line.split(u'\u001a')
-            for item in line:
 
-                item = item.strip()
-                if len(item) < 2:
+            for cs in line:
+
+                cs = cs.strip()
+                if len(cs) < 2:
                     continue
                 
-                site_cs_dict[site_id].append(item)
+                site_cs_dict[site_id].append(cs)
     
     return site_cs_dict
 
-def fetch_cs_order(cs_list, file):
 
-    count = {}
-    with open(file) as fp:
+def fetch_cs_order(cs_list, desc_file):
+
+    order_count_dict = {}
+    with open(desc_file) as fp:
         for line in fp:
             
             line = line.strip()
@@ -49,23 +54,24 @@ def fetch_cs_order(cs_list, file):
                 continue
 
             offset_list = []
-            #print line
-            line = unicode(line, 'GBK')
+            line = unicode(line, 'GBK', 'ignore')
             for i, cs in enumerate(cs_list):
-                if line.find(cs) != -1:
-                    offset_list.append((i, line.find(cs)))
+                offset = line.find(cs)
+                if offset != -1:
+                    offset_list.append((i, offset))
             
             if len(offset_list) != len(cs_list):
                 continue
             
             offset_list = sorted(offset_list, key=lambda item: item[1])
-            key = u'\u001a'.join(map(unicode, [index for index, offset in offset_list]))
-            count.setdefault(key, 0)
-            count[key] += 1
+
+            key = u'\u001a'.join(map(lambda item: unicode(item[0]), offset_list))
+            order_count_dict.setdefault(key, 0)
+            order_count_dict[key] += 1
     
-    max_key = None
+    max_key = u''
     max_count = 0
-    for key, count in count.items():
+    for key, count in order_count_dict.items():
         if count > max_count:
             max_key = key
             max_count = count
@@ -76,36 +82,33 @@ def fetch_cs_order(cs_list, file):
         cs_list_sorted = cs_list
 
     return cs_list_sorted
- 
-def process_site_description(cs, file):
 
-    w_list = []
-    with open(file) as fp:
+
+def filter_cs(cs, desc_file):
+    """
+    """
+
+    wc_matrix = []
+    with open(desc_file) as fp:
         for line in fp:
             
             line = line.strip()
             if not line:
                 continue
 
-            line = unicode(line, 'GBK')
-            wordcount = []
-            offset = line.find(cs) 
+            line = unicode(line, 'GBK', 'ignore')
+            offset = line.find(cs)
             if offset == -1:
                 continue
 
-            wordcount.append((offset, len(line) - offset - len(cs)))
-            w_list.append(wordcount)
+            l_wc, r_wc = offset, len(line) - offset - len(cs)
+            wc_matrix.append((l_wc, r_wc))
     
-    '''
-    for item in w_list:
-        print item
-        '''
-
-    w_trans = numpy.array(w_list).transpose()
-    cs_list_sorted = [cs, 'EOF']
-    for _cs, w in zip(cs_list_sorted, w_trans):
-        print  'mean',numpy.mean(w) 
-        print  'std',numpy.std(w) 
+    wc_matrix_trans = numpy.array(wc_matrix).transpose()
+    cs_list = [cs, 'EOF']
+    for _cs, wc_row in zip(cs_list, wc_matrix_trans):
+        print 'mean:', numpy.mean(wc_row)
+        print 'std:', numpy.std(wc_row)
         print _cs.encode('GBK')
 
     return True
@@ -118,10 +121,13 @@ if __name__ == '__main__':
 
     site_cs_dict = fetch_site_cs('./result.new.new')
     site_id = int(sys.argv[1])
-    if not site_cs_dict.get(site_id):
+
+    cs_list = site_cs_dict.get(site_id)
+    if not cs_list:
         sys.exit(2)
-    cs_list_sorted = fetch_cs_order(site_cs_dict[site_id], './data/{0}.txt'.format(site_id))
+
+    cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
 
     for value in cs_list_sorted: 
         print '----------------------------------'
-        process_site_description(value, './data/{0}.txt'.format(site_id))
+        filter_cs(value, './data/{0}.txt'.format(site_id))
