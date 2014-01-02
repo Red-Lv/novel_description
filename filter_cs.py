@@ -125,7 +125,7 @@ if __name__ == '__main__':
         print 'Usage: {0} site_id'.format(__file__)
         sys.exit(1)
 
-    site_cs_dict = fetch_site_cs('./result.new.new')
+    site_cs_dict = fetch_site_cs('./result')
     site_id = int(sys.argv[1])
 
     cs_list = site_cs_dict.get(site_id)
