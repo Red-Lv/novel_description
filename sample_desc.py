@@ -32,13 +32,13 @@ def sample_description(site_id, sample_size):
 
     try:
         conn = MySQLdb.connect(host='10.46.7.172', port=4195, user='wise_novelfmt_w', passwd='H4k3D8v9X2y5', db='novels')
+        conn.set_character_set('GBK')
+        conn.autocommit(True)
     except Exception as e:
         print 'fail to connect to the db fmt. error: {0}'.format(e)
         return 
 
     cursor = conn.cursor()
-    cursor.set_character_set('GBK')
-    cursor.autocommit(True)
 
     query_sql = 'SELECT min(id), max(id) FROM dir_fmt_info{0}'.format(site_id)
 
