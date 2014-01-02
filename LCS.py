@@ -59,16 +59,14 @@ class LCS(object):
         """
         """
 
-        str_cover_dict = {}
-        cs_dict = {}
-
         potential_sa = []
-
         threshold = 0.2
+
         i = 0
         while i < len(self.suffix_array.height_array):
 
             if self.suffix_array.height_array[i] < k:
+                i += 1
                 continue
 
             j = i + 1
@@ -81,8 +79,10 @@ class LCS(object):
 
             i = j + 1
 
+        cs_dict = {}
         for i, j in potential_sa:
 
+            str_cover_dict = {}
             for index in xrange(i, j):
 
                 pre_offset = self.suffix_array.SA[index - 1]
