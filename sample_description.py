@@ -27,6 +27,7 @@ class HTMLParserExtended(HTMLParser.HTMLParser):
         HTMLParser.HTMLParser.reset(self)
         self.data = []
 
+
 def sample_description(site_id, sample_size):
 
     try:
@@ -113,4 +114,5 @@ if __name__ == '__main__':
 
     site_id = int(sys.argv[1])
     sample_size = 500
+
     sample_description(site_id, sample_size)
