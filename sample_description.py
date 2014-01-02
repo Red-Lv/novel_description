@@ -57,7 +57,7 @@ def sample_description(site_id, sample_size):
     hp_ex = HTMLParserExtended()
 
     valid_cnt = cnt = 0
-    while valid_cnt <= sample_size and cnt < valid_cnt * 2:
+    while valid_cnt < sample_size and cnt < sample_size * 2:
 
         cnt += 1
 
