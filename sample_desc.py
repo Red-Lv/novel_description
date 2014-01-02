@@ -76,6 +76,7 @@ def sample_description(site_id, sample_size):
         if not description:
             continue
 
+        data = description
         while True:
             _data = data
             data = hp_ex.unescape(data)
