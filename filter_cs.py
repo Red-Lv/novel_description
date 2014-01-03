@@ -111,28 +111,42 @@ def filter_cs(cs, desc_file):
     std_threshold = 10.0
 
     for _cs, wc_row in zip(cs_list, wc_matrix_trans):
+
+        if numpy.std(wc_row) > std_threshold:
+            continue
+
         print '-' * 20
         print 'mean:', numpy.mean(wc_row)
         print 'std:', numpy.std(wc_row)
         print _cs.encode('GBK')
-        print numpy.std(wc_row) < std_threshold
+        print numpy.std(wc_row) <= std_threshold
 
     return True
 
 if __name__ == '__main__':
-    
-    if len(sys.argv) != 2:
-        print 'Usage: {0} site_id'.format(__file__)
-        sys.exit(1)
 
     site_cs_dict = fetch_site_cs('./result')
-    site_id = int(sys.argv[1])
 
-    cs_list = site_cs_dict.get(site_id)
-    if not cs_list:
-        sys.exit(2)
+    if len(sys.argv) != 2:
 
-    cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
+        for site_id in site_cs_dict:
 
-    for value in cs_list_sorted: 
-        filter_cs(value, './data/{0}.txt'.format(site_id))
+            cs_list = site_cs_dict.get(site_id)
+            if not cs_list:
+                continue
+
+            cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
+            for value in cs_list_sorted:
+                filter_cs(value, './data/{0}.txt'.format(site_id))
+
+    else:
+        site_id = int(sys.argv[1])
+        cs_list = site_cs_dict.get(site_id)
+
+        if not cs_list:
+            sys.exit(1)
+
+        cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
+
+        for value in cs_list_sorted:
+            filter_cs(value, './data/{0}.txt'.format(site_id))
