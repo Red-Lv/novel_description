@@ -110,7 +110,7 @@ def uni_str_filter(uni_str, regex=None):
     if regex:
         return u''.join([m.group() for m in re.finditer(regex, uni_str)])
     else:
-        return u''.join([m.group() for m in re.finditer(ur'[\u004e-\u9fa5\w]+', uni_str)])
+        return u''.join([m.group() for m in re.finditer(ur'[\u4e00-\u9fa5\w]+', uni_str)])
 
 
 def pattern_employed(pattern_info_list, file):
