@@ -137,7 +137,7 @@ def pattern_employed(pattern_info_list, file):
             for pattern_info in pattern_info_list:
 
                 left, right = pattern_info
-                regex = u'{0}(.+?){1}'.format(left, right)
+                regex = u'{0}(.+){1}'.format(left, right)
                 '''
                 print '*********************'
                 print regex.encode('GBK')
