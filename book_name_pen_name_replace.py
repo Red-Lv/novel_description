@@ -134,6 +134,7 @@ def pattern_employed(pattern_info_list, file):
             print '--------------'
 
             book_name = u''
+            book_name_list = []
             for pattern_info in pattern_info_list:
 
                 left, right = pattern_info
@@ -190,11 +191,21 @@ def pattern_employed(pattern_info_list, file):
 
                         index += 1
 
-                if len(book_name) > 20 or (not set(book_name) & set(raw_book_name)):
+                if len(book_name) > 20 or (set(book_name) & set(raw_book_name) != set(raw_book_name)):
                     book_name = u''
 
                 if book_name:
-                    break
+                    book_name_list.append(book_name)
+                    #break
+
+            max_ratio = 0.0
+            max_book_name = u''
+            for potential_book_name in book_name_list:
+
+                ratio = len(set(potential_book_name) & set(raw_book_name)) / float(len(set(potential_book_name) | set(raw_book_name)))
+                if ratio > max_ratio:
+                    max_ratio = ratio
+                    max_book_name = book_name
 
             if not book_name and line.find(_raw_book_name) != -1:
                 sys.stderr.write('{0}\t{1}\t{2}\n'.format(dir_id, _raw_book_name.encode('GBK', 'ignore'), _raw_pen_name.encode('GBK', 'ignore')))
