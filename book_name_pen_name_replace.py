@@ -127,21 +127,27 @@ def pattern_employed(pattern_info_list, file):
                 raw_pen_name = uni_str_filter(raw_pen_name)
                 continue
 
+            '''
             print '--------------'
             print line.encode('GBK')
             print '--------------'
+            '''
 
             book_name = u''
             for pattern_info in pattern_info_list:
 
                 left, right = pattern_info
                 regex = u'{0}(.+?){1}'.format(left, right)
+                '''
                 print '*********************'
                 print regex.encode('GBK')
                 print '*********************'
+                '''
 
                 m = re.search(regex, line)
                 if not m:
+                    if line.find(u'\u0003') != -1:
+                        sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
                     continue
             
                 s = m.group(1)
