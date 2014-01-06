@@ -169,7 +169,7 @@ def pattern_employed(pattern_info_list, file):
                                                             u''.format(re.escape(cjk_punc_part_list)))
                         potential_book_name = uni_str_filter(s[::-1][: index][::-1], u'[\u4e00-\u9fa5\w\u0003\u0004]+')
 
-                        if (set(potential_book_name) & set(raw_book_name)) == set(raw_book_name):
+                        if potential_book_name.find(raw_book_name) != -1:
                             book_name = s[::-1][: index][::-1]
                             break
 
@@ -185,13 +185,13 @@ def pattern_employed(pattern_info_list, file):
                                                        u''.format(re.escape(cjk_punc_part_list)))
                         potential_book_name = uni_str_filter(s[: index], u'[\u4e00-\u9fa5\w\u0003\u0004]+')
 
-                        if (set(potential_book_name) & set(raw_book_name)) == set(raw_book_name):
+                        if potential_book_name.find(raw_book_name) != -1:
                             book_name = s[: index]
                             break
 
                         index += 1
 
-                if len(book_name) > 30 or (set(book_name) & set(raw_book_name) != set(raw_book_name)):
+                if len(book_name) > 30 or potential_book_name.find(raw_book_name) == -1:
                     book_name = u''
 
                 if book_name:
