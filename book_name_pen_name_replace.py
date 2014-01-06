@@ -141,11 +141,11 @@ def pattern_employed(pattern_info_list, file):
                 assertion_list = []
                 if left != '^':
                     assertion_list.append(left)
-                if right != '^':
+                if right != '$':
                     assertion_list.append(right)
                 assertion = u'|'.join(assertion_list)
 
-                regex = u'{0}((?!({1})).+){1}'.format(left, assertion, right)
+                regex = u'{0}((?!({1})).+){2}'.format(left, assertion, right)
                 '''
                 print '*********************'
                 print regex.encode('GBK')
