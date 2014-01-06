@@ -139,9 +139,9 @@ def pattern_employed(pattern_info_list, file):
                 left, right = pattern_info
 
                 assertion_list = []
-                if left != '^':
+                if left and left != '^':
                     assertion_list.append(left)
-                if right != '$':
+                if right and right != '$':
                     assertion_list.append(right)
                 assertion = u'|'.join(assertion_list)
 
