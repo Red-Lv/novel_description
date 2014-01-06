@@ -188,7 +188,7 @@ def pattern_employed(pattern_info_list, file):
                 if book_name:
                     break
 
-            if not book_name:
+            if not book_name and line.find(_raw_book_name) != -1:
                 sys.stderr.write('{0}\t{1}\t{2}\n'.format(dir_id, _raw_book_name.encode('GBK', 'ignore'), _raw_pen_name.encode('GBK', 'ignore')))
                 if _raw_book_name:
                     line = line.replace(_raw_book_name, u'\u0003')
