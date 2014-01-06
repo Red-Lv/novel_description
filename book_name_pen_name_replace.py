@@ -145,13 +145,7 @@ def pattern_employed(pattern_info_list, file):
 
                 m = re.search(regex, line)
                 if not m:
-                    sys.stderr.write('\t'.format(dir_id, _raw_book_name.encode('GBK', 'ignore'), _raw_pen_name.encode('GBK', 'ignore')))
-                    if _raw_book_name:
-                        line = line.replace(_raw_book_name, u'\u0003')
-                    if _raw_pen_name:
-                        line = line.replace(_raw_pen_name, u'\u0004')
-                    sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
-                    continue
+                   continue
             
                 s = m.group(1)
                 book_name = s
@@ -192,6 +186,14 @@ def pattern_employed(pattern_info_list, file):
 
                 if book_name:
                     break
+
+            if not book_name:
+                sys.stderr.write('\t'.format(dir_id, _raw_book_name.encode('GBK', 'ignore'), _raw_pen_name.encode('GBK', 'ignore')))
+                if _raw_book_name:
+                    line = line.replace(_raw_book_name, u'\u0003')
+                if _raw_pen_name:
+                    line = line.replace(_raw_pen_name, u'\u0004')
+                sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
 
             print 'book_name:', book_name.encode('GBK')
                        
