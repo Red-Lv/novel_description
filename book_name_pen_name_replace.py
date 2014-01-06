@@ -122,6 +122,7 @@ def pattern_employed(pattern_info_list, file):
 
             line = unicode(line, 'GBK')
             if len(line.split(u'\t')) == 3:
+                dir_id, _raw_book_name, _raw_pen_name = line.split(u'\t')
                 dir_id, raw_book_name, raw_pen_name = line.split(u'\t')
                 raw_book_name = uni_str_filter(raw_book_name)
                 raw_pen_name = uni_str_filter(raw_pen_name)
@@ -146,8 +147,12 @@ def pattern_employed(pattern_info_list, file):
 
                 m = re.search(regex, line)
                 if not m:
-                    if line.find(u'\u0003') != -1:
-                        sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
+                    sys.stderr.write('\t'.join(dir_id, _raw_book_name.encode('GBK', 'ignore'), _raw_pen_name.encode('GBK', 'ignore')))
+                    if _raw_book_name:
+                        line = line.replace(_raw_book_name, u'\u0003')
+                    if _raw_pen_name:
+                        line = line.replace(_raw_pen_name, u'\u0004')
+                    sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
                     continue
             
                 s = m.group(1)
