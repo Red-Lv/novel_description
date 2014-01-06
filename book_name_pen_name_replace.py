@@ -128,11 +128,9 @@ def pattern_employed(pattern_info_list, file):
                 raw_pen_name = uni_str_filter(raw_pen_name)
                 continue
 
-            '''
             print '--------------'
             print line.encode('GBK')
             print '--------------'
-            '''
 
             book_name = u''
             for pattern_info in pattern_info_list:
