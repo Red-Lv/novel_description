@@ -37,7 +37,7 @@ def fetch_pattern_group(pattern_info):
                 break
             index -= 1
         
-        left = pattern[index + 1: offset]
+        left = re.escape(pattern[index + 1: offset])
         if not left:
             if pattern_info['l_mean'] < mean_threshold:
                 left = '^'
@@ -48,7 +48,7 @@ def fetch_pattern_group(pattern_info):
                 break
             index += 1
         
-        right = pattern[offset + 1: index]
+        right = re.escape(pattern[offset + 1: index])
         if not right:
             if pattern_info['r_mean'] < mean_threshold:
                 right = '$'
@@ -144,7 +144,7 @@ def pattern_employed(pattern_info_list, file):
                 print '*********************'
                 '''
 
-                m = re.search(re.escape(regex), line)
+                m = re.search(regex, line)
                 if not m:
                     continue
             
