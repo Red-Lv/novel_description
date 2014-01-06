@@ -121,6 +121,7 @@ def pattern_employed(pattern_info_list, file):
         for line in fp:
 
             line = unicode(line, 'GBK')
+            line = line.strip('\n')
             if len(line.split(u'\t')) == 3:
                 dir_id, _raw_book_name, _raw_pen_name = line.split(u'\t')
                 dir_id, raw_book_name, raw_pen_name = line.split(u'\t')
