@@ -145,7 +145,7 @@ def pattern_employed(pattern_info_list, file):
                     assertion_list.append(right)
                 assertion = u'|'.join(assertion_list)
 
-                regex = u'{0}(((?!({1})).)+){2}'.format(left, assertion, right)
+                regex = u'{0}(((?!{1}).)+){2}'.format(left, assertion, right)
                 '''
                 print '*********************'
                 print regex.encode('GBK')
