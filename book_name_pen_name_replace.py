@@ -104,7 +104,7 @@ def uni_str_filter(uni_str, regex=None):
     """
     """
 
-    if isinstance(uni_str, unicode):
+    if not isinstance(uni_str, unicode):
         return u''
 
     if regex:
