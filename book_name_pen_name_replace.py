@@ -158,7 +158,7 @@ def pattern_employed(pattern_info_list, file):
 
                         index += fetch_seg(s[::-1][index:], u'^(?![{0}])[^\u004e-\u9fa5\w\u0003]'
                                                             u''.format(re.escape(cjk_punc_part_list)))
-                        potential_book_name = uni_str_filter('[\u004e-\u9fa5\w\u0003\u0004]+', s[::-1][: index][::-1])
+                        potential_book_name = uni_str_filter(s[::-1][: index][::-1], u'[\u004e-\u9fa5\w\u0003\u0004]+')
 
                         if set(potential_book_name) & set(raw_book_name):
                             book_name = s[::-1][: index][::-1]
@@ -174,7 +174,7 @@ def pattern_employed(pattern_info_list, file):
 
                         index += fetch_seg(s[index: ], u'^(?![{0}])[^\u004e-\u9fa5\w\u0003]'
                                                        u''.format(re.escape(cjk_punc_part_list)))
-                        potential_book_name = uni_str_filter('[\u004e-\u9fa5\w\u0003\u0004]+', s[: index])
+                        potential_book_name = uni_str_filter(s[: index], u'[\u004e-\u9fa5\w\u0003\u0004]+')
 
                         if set(potential_book_name) & set(raw_book_name):
                             book_name = s[: index]
