@@ -84,7 +84,7 @@ def sample_description(site_id, sample_size):
 
         dir_dict[dir_id] = 1
 
-        description = [fullwidth_to_halfwidth(uni_chr) for uni_chr in description]
+        description = u''.join([fullwidth_to_halfwidth(uni_chr) for uni_chr in description])
         data = description
         while True:
             _data = data
