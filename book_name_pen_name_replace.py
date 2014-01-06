@@ -191,7 +191,7 @@ def pattern_employed(pattern_info_list, file):
 
                         index += 1
 
-                if len(book_name) > 20 or (set(book_name) & set(raw_book_name) != set(raw_book_name)):
+                if len(book_name) > 30 or (set(book_name) & set(raw_book_name) != set(raw_book_name)):
                     book_name = u''
 
                 if book_name:
