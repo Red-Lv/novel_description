@@ -59,6 +59,7 @@ def sample_description(site_id, sample_size):
     hp_ex = HTMLParserExtended()
 
     valid_cnt = cnt = 0
+    dir_dict = {}
     while valid_cnt < sample_size and cnt < sample_size * 2:
 
         cnt += 1
@@ -77,6 +78,11 @@ def sample_description(site_id, sample_size):
 
         if not description:
             continue
+
+        if dir_id in dir_dict:
+            continue
+
+        dir_dict[dir_id] = 1
 
         description = fullwidth_to_halfwidth(description)
         data = description
