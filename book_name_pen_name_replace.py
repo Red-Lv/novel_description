@@ -144,7 +144,7 @@ def pattern_employed(pattern_info_list, file):
                 print '*********************'
                 '''
 
-                m = re.search(regex, line)
+                m = re.search(re.escape(regex), line)
                 if not m:
                     continue
             
