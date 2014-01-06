@@ -203,7 +203,7 @@ def pattern_employed(pattern_info_list, file):
             for book_name in book_name_list:
 
                 book_name_filtered = uni_str_filter(book_name)
-                ratio = len(set(book_name_filtered) & set(raw_book_name)) / float(len(set(book_name_filtered) | set(raw_book_name)))
+                ratio = len(raw_book_name) / float(len(book_name_filtered))
                 if ratio > max_ratio and ratio > 1.0 / 3:
                     max_ratio = ratio
                     max_book_name = book_name
