@@ -196,7 +196,7 @@ def pattern_employed(pattern_info_list, file):
                     line = line.replace(_raw_pen_name, u'\u0004')
                 sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
 
-            print 'book_name:', book_name.encode('GBK'), len(uni_str_filter(book_name))
+            print '\t'.join(['book_name: {0}'.format(book_name.encode('GBK')), len(uni_str_filter(book_name))])
                        
 if __name__ == '__main__':
 
