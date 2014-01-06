@@ -191,7 +191,7 @@ def pattern_employed(pattern_info_list, file):
 
                         index += 1
 
-                if len(book_name) > 30 or potential_book_name.find(raw_book_name) == -1:
+                if len(book_name) > 30 or book_name.find(raw_book_name) == -1:
                     book_name = u''
 
                 if book_name:
@@ -200,13 +200,14 @@ def pattern_employed(pattern_info_list, file):
 
             max_ratio = 0.0
             max_book_name = u''
-            for potential_book_name in book_name_list:
+            for book_name in book_name_list:
 
-                ratio = len(set(potential_book_name) & set(raw_book_name)) / float(len(set(potential_book_name) | set(raw_book_name)))
+                ratio = len(set(book_name) & set(raw_book_name)) / float(len(set(book_name) | set(raw_book_name)))
                 if ratio > max_ratio:
                     max_ratio = ratio
                     max_book_name = book_name
 
+            book_name = max_book_name
             if not book_name and line.find(_raw_book_name) != -1:
                 sys.stderr.write('{0}\t{1}\t{2}\n'.format(dir_id, _raw_book_name.encode('GBK', 'ignore'), _raw_pen_name.encode('GBK', 'ignore')))
                 if _raw_book_name:
