@@ -88,7 +88,7 @@ def fetch_seg(s, sentinel_regex=None):
     while index < len(s):
         
         ch = s[index]
-        if re.search(sentinel_regex, ch):
+        if re.search(re.escape(sentinel_regex), ch):
             break
 
         if ch in cjk_punc_part_dict:
@@ -172,8 +172,7 @@ def pattern_employed(pattern_info_list, file):
                     index = 0
                     while index < len(s):
 
-                        index += fetch_seg(s[index: ], re.escape(u'^(?![{0}])[^\u004e-\u9fa5\w\u0003]'
-                                                                 u''.format(cjk_punc_part_list)))
+                        index += fetch_seg(s[index: ], u'^(?![{0}])[^\u004e-\u9fa5\w\u0003]'.format(cjk_punc_part_list))
                         potential_book_name = uni_str_filter('[\u004e-\u9fa5\w\u0003\u0004]+', s[: index])
 
                         if set(potential_book_name) & set(raw_book_name):
