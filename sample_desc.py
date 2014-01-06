@@ -10,6 +10,8 @@ import HTMLParser
 
 import MySQLdb
 
+from halfwidth_fullwidth_transformation.halfwidth_fullwidth_transformation import *
+
 
 class HTMLParserExtended(HTMLParser.HTMLParser):
     
@@ -52,7 +54,7 @@ def sample_description(site_id, sample_size):
     
     min_id, max_id = row
 
-    query_sql = 'SELECT raw_book_name, raw_pen_name, description FROM dir_fmt_info{0} WHERE id = %s'.format(site_id)
+    query_sql = 'SELECT dir_id, raw_book_name, raw_pen_name, description FROM dir_fmt_info{0} WHERE id = %s'.format(site_id)
 
     hp_ex = HTMLParserExtended()
 
@@ -68,14 +70,15 @@ def sample_description(site_id, sample_size):
         if not row:
             continue
 
+        dir_id = row[0]
+        row = row[1:]
         row = map(lambda s: unicode(s.strip(), 'GBK', 'ignore'), row)
         raw_book_name, raw_pen_name, description = row
-
-        sys.stderr.write('{0}\n'.format(description.encode('GBK', 'ignore')))
 
         if not description:
             continue
 
+        description = fullwidth_to_halfwidth(description)
         data = description
         while True:
             _data = data
@@ -84,7 +87,6 @@ def sample_description(site_id, sample_size):
                 break
 
         hp_ex.reset()
-
         hp_ex.feed(data)
 
         data = u''.join(hp_ex.data)
@@ -92,6 +94,10 @@ def sample_description(site_id, sample_size):
 
         data = re.sub(u'\s+', u'\u0020', data)
         data = data.strip()
+
+        sys.stderr.write('{0}\t{1}\t{2}\n'.format(dir_id, raw_book_name.encode('GBK', 'ignore'),
+                                                  raw_pen_name.encode('GBK', 'ignore')))
+        sys.stderr.write('{0}\n'.format(data.encode('GBK', 'ignore')))
 
         if raw_book_name:
             data = data.replace(raw_book_name, u'\u0003')
