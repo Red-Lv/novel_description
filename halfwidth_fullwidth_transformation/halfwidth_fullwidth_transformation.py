@@ -21,6 +21,8 @@ def halfwidth_to_fullwidth(uni_char):
     if 0x0021 <= ord(uni_char) <= 0x007E:
         return unichr(ord(uni_char) - 0x21 + 0xFF01)
 
+    return uni_char
+
 
 def fullwidth_to_halfwidth(uni_char):
     """
@@ -35,6 +37,8 @@ def fullwidth_to_halfwidth(uni_char):
 
     if 0xFF01 <= ord(uni_char) <= 0xFF5E:
         return unichr(ord(uni_char) - 0xFF01 + 0x21)
+
+    return uni_char
 
 if __name__ == '__main__':
 
