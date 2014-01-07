@@ -41,7 +41,7 @@ class DescFilter(object):
         desc = self.book_name_pen_name_util.replace_book_name(site_id, raw_book_name, desc)
         desc = self.book_name_pen_name_util.replace_pen_name(site_id, raw_pen_name, desc)
 
-        pattern_list = self.desc_pattern.get(site_id, [])
+        pattern_list = self.desc_pattern.get('{0}'.format(site_id), [])
 
         for pattern_info in pattern_list:
 
