@@ -13,5 +13,5 @@ do
     ((next = i + 1))
     mkdir -p ./data_${next}
     echo "start book_name pattern replace. iteration: ${i}"
-    sh book_name_pattern_replace.sh ./pattern/book_name_pattern.json.${i} ./data_{i} ./data_${next}
+    sh book_name_pattern_replace.sh ./pattern/book_name_pattern.json.${i} ./data_${i} ./data_${next}
 done
