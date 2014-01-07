@@ -135,6 +135,7 @@ if __name__ == '__main__':
     site_cs_dict = fetch_site_cs(cs_file)
     for site_id in site_cs_dict:
 
+        print 'site_id: {0}'.format(site_id)
         cs_list = site_cs_dict.get(site_id)
         if not cs_list:
             continue
