@@ -137,7 +137,7 @@ def right_punctuation(cs, desc_list):
 
     if tot / float(pair_tot) >= 1.5:
         cs = left_cs
-        return right_cs(cs, desc_list)
+        return right_punctuation(cs, desc_list)
 
     return cs
 
