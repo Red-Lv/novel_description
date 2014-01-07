@@ -141,7 +141,7 @@ if __name__ == '__main__':
 
         cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
         for value in cs_list_sorted:
-            filter_cs(value, '{0}/{0}.txt'.format(desc_dir, site_id))
+            filter_cs(value, '{0}/{1}.txt'.format(desc_dir, site_id))
 
     '''
     site_cs_dict = fetch_site_cs('./result')
