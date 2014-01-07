@@ -129,9 +129,11 @@ def pattern_employed(pattern_info_list, file):
                 raw_pen_name = uni_str_filter(raw_pen_name)
                 continue
 
+            '''
             print '--------------'
             print line.encode('GBK')
             print '--------------'
+            '''
 
             book_name = u''
             book_name_list = []
@@ -211,11 +213,12 @@ def pattern_employed(pattern_info_list, file):
             book_name = max_book_name
             if not book_name and line.find(_raw_book_name) != -1:
                 sys.stderr.write('{0}\t{1}\t{2}\n'.format(dir_id, _raw_book_name.encode('GBK', 'ignore'), _raw_pen_name.encode('GBK', 'ignore')))
+                sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
                 if _raw_book_name:
                     line = line.replace(_raw_book_name, u'\u0003')
                 if _raw_pen_name:
                     line = line.replace(_raw_pen_name, u'\u0004')
-                sys.stderr.write('{0}\n'.format(line.encode('GBK', 'ignore')))
+                sys.stdout.write('{0}\n'.format(line.encode('GBK', 'ignore')))
 
             print '\t'.join(['book_name: {0}'.format(book_name.encode('GBK')), str(len(uni_str_filter(book_name)))])
                        
