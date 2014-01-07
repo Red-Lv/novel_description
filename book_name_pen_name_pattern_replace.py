@@ -243,7 +243,8 @@ if __name__ == '__main__':
         pattern_group_list.extend(fetch_pattern_group(pattern_info))
 
     pattern_employed(pattern_group_list, file)
-     '''
+
+    '''
     if len(sys.argv) != 3:
 
         for site_id in site_pattern_dict:
