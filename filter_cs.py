@@ -164,6 +164,9 @@ def filter_cs(cs, desc_file):
     cs = left_punctuation(cs, desc_list)
     cs = right_punctuation(cs, desc_list)
 
+    if len(cs) < 2:
+        return
+
     for line in desc_list:
 
         offset = line.find(cs)
