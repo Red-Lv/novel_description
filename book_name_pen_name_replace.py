@@ -223,7 +223,7 @@ if __name__ == '__main__':
 
     site_pattern_dict = load_pattern('./book_name_pattern.json')
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
 
         for site_id in site_pattern_dict:
 
@@ -241,6 +241,10 @@ if __name__ == '__main__':
 
     else:
         site_id = sys.argv[1]
+        file = sys.argv[2]
+
+        print 'site_id: {0}'.format(site_id)
+
         pattern_info_list = site_pattern_dict.get(site_id)
         if not pattern_info_list:
             sys.exit(1)
@@ -249,4 +253,4 @@ if __name__ == '__main__':
         for pattern_info in pattern_info_list:
             pattern_group_list.extend(fetch_pattern_group(pattern_info))
 
-        pattern_employed(pattern_group_list, './data/{0}.txt.wf'.format(site_id))
+        pattern_employed(pattern_group_list, file)
