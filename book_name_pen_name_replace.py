@@ -55,7 +55,7 @@ def fetch_pattern_group(pattern_info):
 
         pattern_group_list.append((left, right))
     
-    pattern_group_list= sorted(pattern_group_list, key=lambda item: min(map(len, item)), reverse=True)
+    pattern_group_list = sorted(pattern_group_list, key=lambda item: min(map(len, item)), reverse=True)
     return pattern_group_list
 
 
