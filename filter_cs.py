@@ -84,19 +84,51 @@ def fetch_cs_order(cs_list, desc_file):
     return cs_list_sorted
 
 
+def left_punctuation(cs, desc_list):
+    """
+    """
+
+    if re.search(u'[\u4e00-\u9fa5\w\u0003\u0004]', cs[0]):
+        return cs
+
+    m = re.search(ur'^(.)\1+', cs)
+    first_cs = m.group()
+    m = re.search(ur'^(.)\1+', cs[len(first_cs): ])
+    second_cs = m.group()
+
+    tot = 0
+    pair_tot = 0
+    for desc in desc_list:
+        if desc.find(first_cs) != -1:
+            tot += 1
+        if desc.find(first_cs + second_cs) != -1:
+            pair_tot += 1
+
+    if tot / float(pair_tot) >= 1.5:
+        cs = cs[len(first_cs): ]
+        return left_punctuation(cs, desc_list)
+
+    return cs
+
 def filter_cs(cs, desc_file):
     """
     """
 
     wc_matrix = []
+    desc_list = []
     with open(desc_file) as fp:
         for line in fp:
             
-            line = line.strip()
+            line = line.strip('\n')
             if not line:
                 continue
 
+            if len(line.split('\t')) == 3:
+                continue
+
             line = unicode(line, 'GBK', 'ignore')
+            desc_list.append(line)
+
             offset = line.find(cs)
             if offset == -1:
                 continue
@@ -115,6 +147,9 @@ def filter_cs(cs, desc_file):
         print '-' * 20
         print 'mean:', numpy.mean(wc_matrix_trans[0])
         print 'std:', numpy.std(wc_matrix_trans[0])
+
+        cs = left_punctuation(cs, desc_list)
+        cs = left_punctuation(cs[::-1], desc_list)[::-1]
 
         print cs.encode('GBK')
 
@@ -142,32 +177,4 @@ if __name__ == '__main__':
 
         cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
         for value in cs_list_sorted:
-            filter_cs(value, '{0}/{1}.txt'.format(desc_dir, site_id))
-
-    '''
-    site_cs_dict = fetch_site_cs('./result')
-
-    if len(sys.argv) != 2:
-
-        for site_id in site_cs_dict:
-
-            cs_list = site_cs_dict.get(site_id)
-            if not cs_list:
-                continue
-
-            cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
-            for value in cs_list_sorted:
-                filter_cs(value, './data/{0}.txt'.format(site_id))
-
-    else:
-        site_id = int(sys.argv[1])
-        cs_list = site_cs_dict.get(site_id)
-
-        if not cs_list:
-            sys.exit(1)
-
-        cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
-
-        for value in cs_list_sorted:
-            filter_cs(value, './data/{0}.txt'.format(site_id))
-    '''
+            filter_cs(value, '{0}/{1}.txt.wf'.format(desc_dir, site_id))
