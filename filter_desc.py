@@ -7,6 +7,7 @@ import re
 import json
 
 from util import *
+from book_name_pen_name_util import *
 
 
 class DescFilter(object):
@@ -15,81 +16,54 @@ class DescFilter(object):
 
         pass
 
-    def init(self, pattern_file):
+    def init(self, book_name_pattern_file, pen_name_pattern_file, desc_pattern_file):
         """
         """
+
+        self.book_name_pen_name_util = BookNamePenNameUtil()
+        self.book_name_pen_name_util.init(book_name_pattern_file, pen_name_pattern_file)
 
         try:
-            with open(pattern_file) as fp:
-                self.site_desc_pattern = json.load(fp, encoding='GBK')
+            with open(desc_pattern_file) as fp:
+                self.desc_pattern = json.load(fp, encoding='GBK')
         except Exception as e:
-            self.site_desc_pattern = {}
+            self.desc_pattern = {}
             print 'fail to load desc pattern from file. err: {0}'.format(e)
-
-        self.valid_str_regex = re.compile(ur'[\u4e00-\u9fa5\w]')
-
-        self.hp_ex = HTMLParserExtended()
-
-        self.threshold = 3.0
 
         return True
 
-    def filter_invalid_character(self, uni_str):
-        """
-        """
-
-        uni_str_valid = u''
-        for s in self.valid_str_regex.findall(uni_str):
-            uni_str_valid += s
-
-        return uni_str_valid
-
     def filter_desc(self, site_id, raw_book_name, raw_pen_name, raw_desc):
-        """filter desc
-
-        Arguments:
-            raw_book_name:
-            raw_pen_name:
-            raw_desc:   description in unicode
-
-        return:
-            desc_filtered:  description filtered in unicode
+        """
         """
 
-        book_name, pen_name, desc = map(html_element_filter, [raw_book_name, raw_pen_name, raw_desc])
-        book_name_valid, pen_name_valid, desc_valid = map(self.filter_invalid_character, [book_name, pen_name, desc])
+        desc = html_element_filter(raw_desc)
 
-        desc_valid_replaced = desc_valid
-        if book_name_valid:
-            desc_valid_replaced = desc_valid_replaced.replace(book_name_valid, u'\u0003')
-        if pen_name_valid:
-            desc_valid_replaced = desc_valid_replaced.replace(pen_name_valid, u'\u0004')
+        desc = self.book_name_pen_name_util.replace_book_name(site_id, raw_book_name, desc)
+        desc = self.book_name_pen_name_util.replace_pen_name(site_id, raw_pen_name, desc)
 
-        pattern_list = []
-        if site_id in self.site_desc_pattern:
-            pattern_list = self.site_desc_pattern[site_id]
+        pattern_list = self.desc_pattern.get(site_id, [])
 
-        for pattern in pattern_list:
+        for pattern_info in pattern_list:
 
-            regex = pattern['regex']
-            type = pattern['type']
-            mean = pattern['mean']
-            std = pattern['std']
+            pattern = pattern_info['pattern']
+            type = pattern_info['type']
+            l_mean = pattern_info['l_mean']
+            l_std = pattern_info['l_std']
+            r_mean = pattern_info['r_mean']
+            r_std = pattern_info['r_std']
 
-            m = re.search(regex, desc_valid_replaced, re.I)
-            if not m:
+            offset = desc.find(pattern)
+            if offset == -1:
                 continue
 
-            hit_part = m.group()
-            offset = desc_valid_replaced.find(hit_part)
-            l_wc, r_wc = offset, len(desc_valid_replaced) - offset - len(hit_part)
-            wc = l_wc if type == 0 else r_wc
+            left, right = desc[: offset], desc[offset + len(pattern): ]
+            desc = u''
+            if type <= 0:
+                if len(left) <= l_mean + l_std * 3.0:
+                    desc += left
 
-            if wc > mean + std * self.threshold:
-                continue
+            if type >= 0:
+                if len(right) <= r_mean + r_std * 3.0:
+                    desc += right
 
-            if type == 0:
-                desc_valid_replaced = desc_valid_replaced[offset + len(hit_part): ]
-
-            else:
-                desc_valid_replaced = desc_valid_replaced[: offset]
+        return desc
