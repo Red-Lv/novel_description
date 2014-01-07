@@ -67,3 +67,16 @@ class DescFilter(object):
                     desc += right
 
         return desc
+
+if __name__ == '__main__':
+
+    desc_filter = DescFilter()
+    desc_filter.init('./pattern/book_name_pattern.json', './pattern/pen_name_pattern.json', './pattern/desc_pattern.json')
+
+    site_id =
+    raw_book_name = u''
+    raw_pen_name = u''
+    raw_desc = u''
+
+    desc = desc_filter.filter_desc(site_id, raw_book_name, raw_pen_name, raw_desc)
+    print desc
