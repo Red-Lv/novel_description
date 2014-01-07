@@ -13,7 +13,7 @@ def merge_pattern(*args):
 
     pattern_merged = {}
     for pattern in args:
-        for key, value in pattern:
+        for key, value in pattern.items():
             pattern_merged.setdefault(key, [])
             pattern_merged[key].extend(value)
 
