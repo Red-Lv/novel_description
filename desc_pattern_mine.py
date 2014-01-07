@@ -172,7 +172,7 @@ if __name__ == '__main__':
             if not line:
                 continue
 
-            if len(line.split('\t')) != 3:
+            if len(line.split('\t')) == 3:
                 continue
 
             seq_list.append(unicode(line, 'GBK', 'ignore'))
