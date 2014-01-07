@@ -224,7 +224,7 @@ def pattern_employed(pattern_info_list, file):
                        
 if __name__ == '__main__':
 
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print 'Usage: {9} pattern_file site_id site_desc_file'.format(__file__)
         sys.exit(1)
 
