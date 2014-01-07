@@ -33,4 +33,4 @@ if __name__ == '__main__':
 
     pattern_merged = merge_pattern(*pattern_list)
 
-    json.dumps(pattern_merged, ensure_ascii=False, encoding='GBK')
+    json.dumps(pattern_merged, ensure_ascii=False).encode('GBK')
