@@ -221,8 +221,29 @@ def pattern_employed(pattern_info_list, file):
                        
 if __name__ == '__main__':
 
-    site_pattern_dict = load_pattern('./book_name_pattern.json')
+    if len(sys.argv) != 3:
+        print 'Usage: {9} pattern_file site_id site_desc_file'.format(__file__)
+        sys.exit(1)
 
+    pattern_file = sys.argv[1]
+    site_id = sys.argv[2]
+    site_desc_file = sys.argv[3]
+
+    site_pattern_dict = load_pattern(pattern_file)
+
+    print 'site_id: {0}'.format(site_id)
+
+    pattern_info_list = site_pattern_dict.get(site_id)
+    if not pattern_info_list:
+        print 'site_id: {0} has no pattern'.format(site_id)
+        sys.exit(2)
+
+    pattern_group_list = []
+    for pattern_info in pattern_info_list:
+        pattern_group_list.extend(fetch_pattern_group(pattern_info))
+
+    pattern_employed(pattern_group_list, file)
+     '''
     if len(sys.argv) != 3:
 
         for site_id in site_pattern_dict:
@@ -254,3 +275,4 @@ if __name__ == '__main__':
             pattern_group_list.extend(fetch_pattern_group(pattern_info))
 
         pattern_employed(pattern_group_list, file)
+        '''
