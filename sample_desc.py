@@ -126,6 +126,6 @@ if __name__ == '__main__':
         sys.exit(1)
 
     site_id = int(sys.argv[1])
-    sample_size = 500
+    sample_size = 2000
 
     sample_description(site_id, sample_size)
