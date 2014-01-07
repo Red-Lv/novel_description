@@ -109,7 +109,7 @@ def sample_description(site_id, sample_size):
             data = data.replace(raw_book_name, u'\u0003')
 
         if raw_pen_name:
-            data = data.replace(raw_book_name, u'\u0004')
+            data = data.replace(raw_pen_name, u'\u0004')
 
         sys.stdout.write('{0}\n'.format(data.encode('GBK', 'ignore')))
 
