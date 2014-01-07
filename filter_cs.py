@@ -88,6 +88,9 @@ def left_punctuation(cs, desc_list):
     """
     """
 
+    if not cs:
+        return cs
+
     if re.search(u'[\u4e00-\u9fa5\w\u0003\u0004]', cs[0]):
         return cs
 
@@ -113,6 +116,9 @@ def left_punctuation(cs, desc_list):
 def right_punctuation(cs, desc_list):
     """
     """
+
+    if not cs:
+        return cs
 
     if re.search(u'[\u4e00-\u9fa5\w\u0003\u0004]', cs[-1]):
         return cs
