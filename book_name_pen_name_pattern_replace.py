@@ -245,7 +245,7 @@ if __name__ == '__main__':
     for pattern_info in pattern_info_list:
         pattern_group_list.extend(fetch_pattern_group(pattern_info))
 
-    pattern_employed(pattern_group_list, file)
+    pattern_employed(pattern_group_list, site_desc_file)
 
     '''
     if len(sys.argv) != 3:
