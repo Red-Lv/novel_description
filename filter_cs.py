@@ -125,6 +125,25 @@ def filter_cs(cs, desc_file):
 
 if __name__ == '__main__':
 
+    if len(sys.argv) != 3:
+        print 'Usage: {0} cs_file desc_dir'.format(__file__)
+        sys.exit(1)
+
+    cs_file = sys.argv[1]
+    desc_dir = sys.argv[2]
+
+    site_cs_dict = fetch_site_cs(cs_file)
+    for site_id in site_cs_dict:
+
+        cs_list = site_cs_dict.get(site_id)
+        if not cs_list:
+            continue
+
+        cs_list_sorted = fetch_cs_order(cs_list, './data/{0}.txt'.format(site_id))
+        for value in cs_list_sorted:
+            filter_cs(value, '{0}/{0}.txt'.format(desc_dir, site_id))
+
+    '''
     site_cs_dict = fetch_site_cs('./result')
 
     if len(sys.argv) != 2:
@@ -150,3 +169,4 @@ if __name__ == '__main__':
 
         for value in cs_list_sorted:
             filter_cs(value, './data/{0}.txt'.format(site_id))
+    '''
