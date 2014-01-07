@@ -91,8 +91,10 @@ def left_punctuation(cs, desc_list):
     if not cs:
         return cs
 
+    '''
     if re.search(u'[\u4e00-\u9fa5\w\u0003\u0004]', cs[0]):
         return cs
+        '''
 
     m = re.search(ur'^(.)\1*', cs)
     left_cs = m.group()
@@ -106,7 +108,7 @@ def left_punctuation(cs, desc_list):
         if desc.find(cs) != -1:
             pair_tot += 1
 
-    if tot / float(pair_tot) >= 1.5:
+    if pair_tot and tot / float(pair_tot) >= 1.5:
         cs = right_cs
         return left_punctuation(cs, desc_list)
 
@@ -120,8 +122,10 @@ def right_punctuation(cs, desc_list):
     if not cs:
         return cs
 
+    '''
     if re.search(u'[\u4e00-\u9fa5\w\u0003\u0004]', cs[-1]):
         return cs
+        '''
 
     m = re.search(ur'(.)\1*$', cs)
     right_cs = m.group()
@@ -135,7 +139,7 @@ def right_punctuation(cs, desc_list):
         if desc.find(cs) != -1:
             pair_tot += 1
 
-    if tot / float(pair_tot) >= 1.5:
+    if pair_tot and tot / float(pair_tot) >= 1.5:
         cs = left_cs
         return right_punctuation(cs, desc_list)
 
