@@ -4,6 +4,7 @@
 __author__ = 'lvleibing01'
 
 import sys
+import math
 
 from suffix_array.SuffixArraybyDC3 import SuffixArraybyDC3
 
@@ -54,13 +55,19 @@ class LCS(object):
         self.suffix_array.init(self.str_comp)
 
         return True
+    
+    def cal_cs_threshold(self):
+        """
+        """
+
+        return math.floor((1 - (math.tanh(math.log(len(seq_list) / 100.0)) + 1) / 2.0 * 0.9) * len(seq_list))
 
     def check_cs_existence(self, k):
         """
         """
 
         potential_sa = []
-        threshold = 0.2
+        threshold = self.cal_cs_threshold()
 
         i = 0
         while i < len(self.suffix_array.height_array):
@@ -77,7 +84,7 @@ class LCS(object):
 
                 j += 1
 
-            if j - i + 1 >= len(self.seq_list) * threshold:
+            if j - i + 1 >= threshold:
                 potential_sa.append((i, j))
 
             i = j + 1
@@ -97,7 +104,7 @@ class LCS(object):
                 str_index = binary_search(self.start_offset_list, 0, len(self.start_offset_list) - 1, offset)
                 str_cover_dict[str_index] = 1
 
-            if len(str_cover_dict) >= len(self.seq_list) * threshold:
+            if len(str_cover_dict) >= threshold:
 
                 cs = self.str_comp[self.suffix_array.SA[i]: ][: k]
                 if cs.find(self.sep) == -1:
@@ -115,7 +122,7 @@ class LCS(object):
 
         max_len = max(map(len, self.seq_list))
         left, right = 1, max_len
-
+        
         while left <= right:
 
             mid = (left + right) / 2
@@ -126,7 +133,7 @@ class LCS(object):
                 right = mid - 1
     
         cs_list = []
-        for i in range(right, 1, -1):
+        for i in range(right, right - 1, -1):
 
             i_cs_list = self.check_cs_existence(i)
 
