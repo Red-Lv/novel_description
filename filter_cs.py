@@ -91,22 +91,47 @@ def left_punctuation(cs, desc_list):
     if re.search(u'[\u4e00-\u9fa5\w\u0003\u0004]', cs[0]):
         return cs
 
-    m = re.search(ur'^(.)\1+', cs)
-    first_cs = m.group()
-    m = re.search(ur'^(.)\1+', cs[len(first_cs): ])
-    second_cs = m.group()
+    m = re.search(ur'^(.)\1*', cs)
+    left_cs = m.group()
+    right_cs = cs[len(left_cs): ]
 
     tot = 0
     pair_tot = 0
     for desc in desc_list:
-        if desc.find(first_cs) != -1:
+        if desc.find(right_cs) != -1:
             tot += 1
-        if desc.find(first_cs + second_cs) != -1:
+        if desc.find(cs) != -1:
             pair_tot += 1
 
     if tot / float(pair_tot) >= 1.5:
-        cs = cs[len(first_cs): ]
+        cs = right_cs
         return left_punctuation(cs, desc_list)
+
+    return cs
+
+
+def right_punctuation(cs, desc_list):
+    """
+    """
+
+    if re.search(u'[\u4e00-\u9fa5\w\u0003\u0004]', cs[-1]):
+        return cs
+
+    m = re.search(ur'(.)\1*$', cs)
+    right_cs = m.group()
+    left_cs = cs[: len(cs) - len(right_cs)]
+
+    tot = 0
+    pair_tot = 0
+    for desc in desc_list:
+        if desc.find(left_cs) != -1:
+            tot += 1
+        if desc.find(cs) != -1:
+            pair_tot += 1
+
+    if tot / float(pair_tot) >= 1.5:
+        cs = left_cs
+        return right_cs(cs, desc_list)
 
     return cs
 
@@ -116,9 +141,10 @@ def filter_cs(cs, desc_file):
 
     wc_matrix = []
     desc_list = []
+
     with open(desc_file) as fp:
         for line in fp:
-            
+
             line = line.strip('\n')
             if not line:
                 continue
@@ -129,13 +155,18 @@ def filter_cs(cs, desc_file):
             line = unicode(line, 'GBK', 'ignore')
             desc_list.append(line)
 
-            offset = line.find(cs)
-            if offset == -1:
-                continue
+    cs = left_punctuation(cs, desc_list)
+    cs = right_punctuation(cs, desc_list)
 
-            l_wc, r_wc = offset, len(line) - offset - len(cs)
-            wc_matrix.append((l_wc, r_wc))
-    
+    for line in desc_list:
+
+        offset = line.find(cs)
+        if offset == -1:
+            continue
+
+        l_wc, r_wc = offset, len(line) - offset - len(cs)
+        wc_matrix.append((l_wc, r_wc))
+
     wc_matrix_trans = numpy.array(wc_matrix).transpose()
     cs_list = [cs, 'EOF']
 
@@ -148,8 +179,6 @@ def filter_cs(cs, desc_file):
         print 'mean:', numpy.mean(wc_matrix_trans[0])
         print 'std:', numpy.std(wc_matrix_trans[0])
 
-        cs = left_punctuation(cs, desc_list)
-        cs = left_punctuation(cs[::-1], desc_list)[::-1]
 
         print cs.encode('GBK')
 
