@@ -110,16 +110,16 @@ def filter_cs(cs, desc_file):
     mean_threshold = 0.0
     std_threshold = 10.0
 
-    for _cs, wc_row in zip(cs_list, wc_matrix_trans):
-
-        if numpy.std(wc_row) > std_threshold:
-            continue
+    if wc_matrix_trans.size and (numpy.std(wc_matrix_trans[0]) <= std_threshold or numpy.std(wc_matrix_trans[1]) <= std_threshold):
 
         print '-' * 20
-        print 'mean:', numpy.mean(wc_row)
-        print 'std:', numpy.std(wc_row)
-        print _cs.encode('GBK')
-        print numpy.std(wc_row) <= std_threshold
+        print 'mean:', numpy.mean(wc_matrix_trans[0])
+        print 'std:', numpy.std(wc_matrix_trans[0])
+
+        print cs.encode('GBK')
+
+        print 'mean:', numpy.mean(wc_matrix_trans[1])
+        print 'std:', numpy.std(wc_matrix_trans[1])
 
     return True
 
