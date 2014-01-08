@@ -15,6 +15,8 @@ class DescFilter(object):
 
     def __init__(self):
 
+        self.suffix_punc_list = list(u'\u3009\u300b\u300d\u300f\u3011\u3015\u3017\u3019\u301b\u0029\u005d\u007d\u0020')
+        self.prefix_punc_list = list(u'\u3008\u300a\u300c\u300d\u3010\u3014\u3016\u3018\u301a\u0028\u005b\u007b\u0020')
         pass
 
     def init(self, book_name_pattern_file, pen_name_pattern_file, desc_pattern_file):
@@ -65,22 +67,26 @@ class DescFilter(object):
 
             if type <= 0:
                 desc += right
-            
-            if re.search(ur'^[\u0003\u0004\s]+$', desc):
-                desc = u''
+
+        desc = desc.lstrip(u''.join(self.suffix_punc_list))
+        desc = desc.rstrip(u''.join(self.prefix_punc_list))
+
+        if re.search(ur'^[\u0003\u0004\s]+$', desc):
+            desc = u''
+
+
 
         return desc
 
 if __name__ == '__main__':
     
-    '''
     if len(sys.argv) < 4:
         print 'Usage: {0} desc_pattern site_id desc_file'
         sys.exit(1)
     
     site_id = int(sys.argv[2])
     desc_file = sys.argv[3]
-    '''
+
     desc_pattern_file = sys.argv[1]
 
     desc_filter = DescFilter()
@@ -89,7 +95,6 @@ if __name__ == '__main__':
     raw_book_name = u'\u0003'
     raw_pen_name = u'\u0004'
 
-    '''
     with open(desc_file) as fp:
         for line in fp:
             
@@ -107,12 +112,3 @@ if __name__ == '__main__':
                 sys.stdout.write('{0}\n'.format(raw_desc.encode('GBK')))
                 sys.stdout.write('{0}\n'.format(desc.encode('GBK')))
                 sys.stdout.write('------------------------------------\n')
-                '''
-                
-    site_id = 173
-    raw_book_name = '爹地快追,妈咪快跑'.decode('UTF-8')
-    raw_pen_name = '五月七日'.decode('UTF-8')
-    raw_desc = '推荐: 《》 《》 《》 《》 《》'.decode('UTF-8')
-
-    desc = desc_filter.filter_desc(site_id, raw_book_name, raw_pen_name, raw_desc)
-    print desc.encode('GBK')
