@@ -4,7 +4,10 @@
 __author__ = 'lvleibing01'
 
 
+import re
 import HTMLParser
+
+from halfwidth_fullwidth_transformation.halfwidth_fullwidth_transformation import *
 
 
 class HTMLParserExtended(HTMLParser.HTMLParser):
@@ -26,7 +29,8 @@ class HTMLParserExtended(HTMLParser.HTMLParser):
 
 def html_element_filter(uni_str):
 
-    data = uni_str
+    data = u''.join([fullwidth_to_halfwidth(uni_chr) for uni_chr in uni_str])
+
     hp_ex = HTMLParserExtended()
 
     while True:
@@ -38,6 +42,8 @@ def html_element_filter(uni_str):
     hp_ex.feed(data)
     data = u''.join(hp_ex.data)
 
-    data = data.replace(u'\u001a', u'\0020')
+    data = data.replace(u'\u00a0', u'\0020')
+    data = re.sub(u'\s+', u'\u0020', data)
+    data = data.strip()
 
     return data
