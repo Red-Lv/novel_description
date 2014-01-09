@@ -4,6 +4,7 @@
 __author__ = 'lvleibing01'
 
 import sys
+import math
 import random
 
 import MySQLdb
@@ -225,45 +226,70 @@ class AuthorityDesc(object):
         self.lcs.init(*[native_desc_filtered_list[i] for i in group_elem_dict[max_group_index]])
         f = lambda x: math.ceil((1 - (math.tanh(math.log(x / 3.0)) + 1) / 2.0 * 0.5) * x)
         self.lcs.set_cs_threshold(f(len(group_elem_dict[max_group_index])))
-        max_group_lcs = self.lcs.gen()
+        max_group_lcs = self.lcs.gen_lcs()
 
         max_group_lcs_threshold = len(native_desc_filtered_list[potential_group[(len(potential_group) - 1) / 2]]) * 0.5
         if len(max_group_lcs) >= max_group_lcs_threshold:
             for native_desc in native_desc_filtered_list:
-                native_desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w\s\u0003\u0004]', u'', native_desc)
+                native_desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w\u0003\u0004]', u'', native_desc)
                 if native_desc_filtered.find(max_group_lcs) == -1:
                     continue
 
-                offset_1 = self.fetch_native_desc_offset(native_desc, max_group_lcs)
-                offset_2 = self.fetch_native_desc_offset(native_desc, native_desc_filtered[native_desc_filtered.find(max_group_lcs) + len(max_group_lcs)])
+                start = self.fetch_native_desc_start(native_desc, max_group_index)
+                end = self.fetch_native_desc_end(native_desc, max_group_index)
 
-                authority_desc = native_desc[offset_1: offset_2]
+                authority_desc = native_desc[start: end + 1]
 
         return authority_desc
 
-    def fetch_native_desc_offset(self, native_desc, uni_str):
+    def fetch_native_desc_start(self, native_desc, uni_str, left_punc_dict=left_punc_dict, right_punc_dict=right_punc_dict):
         """
         """
 
+        start = 0
+
         potential_offset_list = [m.start() for m in re.finditer(uni_str[0], native_desc)]
-        start = -1
         for offset in potential_offset_list:
+
             native_desc_part = native_desc[offset:]
-            native_desc_part_filtered = re.sub(u'[^\u4e00-\u9fa5\w\s\u0003\u0004]', u'', native_desc_part)
+            native_desc_part_filtered = extract_uni_str(native_desc_part, u'[\u004e-\u9fa5\w\u0003\u0004]+')
             if native_desc_part_filtered.find(uni_str) != -1:
                 start = offset
 
-        suffix_punc_str = u'\u3009\u300b\u300d\u300f\u3011\u3015\u3017\u3019\u301b\u0029\u005d\u007d\u0020'
+        punc_stack = list()
+        punc_stack.append(start)
+        for i in xrange(start):
 
+            ch = native_desc[i]
+
+            if ch in left_punc_dict:
+                punc_stack.append(i)
+
+            if ch in right_punc_dict:
+                top = punc_stack[-1]
+                if right_punc_dict.get(ch) == left_punc_dict.get(top):
+                    punc_stack.pop()
+
+        start -= 1
         while start >= 0:
 
-            if suffix_punc_str.find(native_desc) == -1:
-                start += 1
+            if not extract_uni_str(native_desc[start]):
                 break
 
-            start -= 1
-
+        start += 1
         return start
+
+    def fetch_native_desc_end(self, native_desc, uni_str):
+        """
+        """
+
+        native_desc_reversed = native_desc[:: -1]
+        uni_str_reversed = uni_str[:: -1]
+
+        start = self.fetch_native_desc_start(native_desc_reversed, uni_str_reversed, right_punc_dict, left_punc_dict)
+
+        end = len(native_desc) - 1 - start
+        return end
 
     def extract_key_sent(self, uni_str, sep):
         """
