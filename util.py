@@ -10,13 +10,13 @@ import HTMLParser
 from halfwidth_fullwidth_transformation.halfwidth_fullwidth_transformation import *
 from dataframe_util import *
 
-#prefix_punc_str = '¡´¡¶¡¸¡º¡²¡¼??([{'
-prefix_punc_str = u'\u3008\u300a\u300c\u300d\u3010\u3014\u3016\u3018\u301a\u301d\u0028\u005b\u007b'
-#suffix_punc_str = ¡µ¡·¡¹¡»¡³¡½??)]}'
-suffix_punc_str = u'\u3009\u300b\u300d\u300f\u3011\u3015\u3017\u3019\u301b\u301e\u0029\u005d\u007d'
+#left_punc_str = '¡´¡¶¡¸¡º¡²¡¼??([{'
+left_punc_str = u'\u3008\u300a\u300c\u300d\u3010\u3014\u3016\u3018\u301a\u301d\u0028\u005b\u007b'
+#right_punc_str = ¡µ¡·¡¹¡»¡³¡½??)]}'
+right_punc_str = u'\u3009\u300b\u300d\u300f\u3011\u3015\u3017\u3019\u301b\u301e\u0029\u005d\u007d'
 
-prefix_punc_dict = {prefix_punc: index for index, prefix_punc in enumerate(prefix_punc_str)}
-suffix_punc_dict = {suffix_punc: index for index, suffix_punc in enumerate(suffix_punc_str)}
+left_punc_dict = {left_punc: index for index, left_punc in enumerate(left_punc_str)}
+right_punc_dict = {right_punc: index for index, right_punc in enumerate(right_punc_str)}
 
 class HTMLParserExtended(HTMLParser.HTMLParser):
 
