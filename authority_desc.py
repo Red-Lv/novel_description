@@ -151,7 +151,7 @@ class AuthorityDesc(object):
         """
         """
 
-        valid_desc_len_threshold = 1
+        valid_desc_len_threshold = 5
         desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w]', '', desc)
 
         return len(desc_filtered) >= valid_desc_len_threshold
