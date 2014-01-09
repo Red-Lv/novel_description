@@ -230,8 +230,8 @@ class AuthorityDesc(object):
 
         max_group_lcs_threshold = len(native_desc_filtered_list[potential_group[(len(potential_group) - 1) / 2]]) * 0.5
         if len(max_group_lcs) >= max_group_lcs_threshold:
-            for native_desc in native_desc_filtered_list:
-                native_desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w\u0003\u0004]', u'', native_desc)
+            for native_desc in native_desc_list:
+                native_desc_filtered = extract_uni_str(native_desc, u'[\u4e00-\u9fa5\w\u0003\u0004]')
                 if native_desc_filtered.find(max_group_lcs) == -1:
                     continue
 
