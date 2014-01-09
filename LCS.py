@@ -137,52 +137,6 @@ class LCS(object):
 
         return lcs
 
-    def gen_cs(self):
-        """
-        """
-
-        self.suffix_array.gen_height_array()
-        #self.suffix_array.dump_suffix_array()
-        #self.suffix_array.dump_height_array()
-
-        max_len = max(map(len, self.seq_list))
-        left, right = 1, max_len
-        
-        while left <= right:
-
-            mid = (left + right) / 2
-            cs = self.check_cs_existence(mid)
-            if cs:
-                left = mid + 1
-            else:
-                right = mid - 1
-    
-        cs_list = []
-        for i in range(right, right - 1, -1):
-
-            i_cs_list = self.check_cs_existence(i)
-
-            i_cs_valid_list = []
-            for item in i_cs_list:
-
-                valid = True
-                for cs in cs_list:
-                    if cs.find(item) != -1:
-                        valid = False
-                        break
-                
-                if valid: 
-                    i_cs_valid_list.append(item)
-
-            if not i_cs_valid_list:
-                continue
-
-            cs_list.extend(i_cs_valid_list)
-
-            print i
-            print u'\u001a'.join(i_cs_valid_list).encode('GBK', 'ignore')
-
-        return True
 
 if __name__ == '__main__':
 
