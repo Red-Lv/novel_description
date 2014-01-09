@@ -130,7 +130,7 @@ class AuthorityDesc(object):
             print 'site_id: {0}'.format(site_id)
             print 'dir_id: {0}'.format(dir_id)
             print 'dir_url: {0}'.format(dir_url)
-            print 'raw_desc: {0}'.format(raw_desc)
+            #print 'raw_desc: {0}'.format(raw_desc)
             print 'native_desc: {0}'.format(native_desc.encode('GBK', 'ignore'))
 
             '''
@@ -141,10 +141,12 @@ class AuthorityDesc(object):
             native_desc_list.append(native_desc)
 
         authority_desc = self.authority_desc_strategy(native_desc_list)
-        authority_desc = authority_desc.replace(u'\u0003', book_name)
-        authority_desc = authority_desc.replace(u'\u0004', pen_name)
+        authority_desc = authority_desc.replace(u'\u0003', unicode(book_name, 'GBK'))
+        authority_desc = authority_desc.replace(u'\u0004', unicode(pen_name, 'GBK'))
+        authority_desc = authority_desc.encode('GBK', 'ignore')
 
         dir_url = cluster_info[0][2]
+        print '*' * 20
         print '\t'.join(map(str, [rid, book_name, pen_name, dir_url, authority_desc]))
 
         return authority_desc
@@ -158,7 +160,7 @@ class AuthorityDesc(object):
         if not native_desc_list:
             return authority_desc
 
-        native_desc_filtered_list = [re.sub(u'[^\u4e00-\u9fa5\w\s]', u'001a', native_desc) for native_desc in native_desc_list]
+        native_desc_filtered_list = [re.sub(u'[^\u4e00-\u9fa5\w\s]', u'\u001a', native_desc) for native_desc in native_desc_list]
 
         key_sent_list = []
         key_sent_dict = {}
@@ -173,23 +175,24 @@ class AuthorityDesc(object):
             group_elem_dict.setdefault(group_index, set())
             group_elem_dict[group_index].add(i)
 
-        native_desc_filtered_list = [re.sub(u'\s+', '', native_desc.replace(u'001a', u'')) for native_desc in native_desc_filtered_list]
+        native_desc_filtered_list = [re.sub(u'\s+', '', native_desc.replace(u'\u001a', u'')) for native_desc in native_desc_filtered_list]
         group_lcs_dict = {}
         for group_index in group_elem_dict:
 
-            lcs = self.lcs.init(*[native_desc_list[i] for i in group_elem_dict[i]])
+            self.lcs.init(*[native_desc_filtered_list[i] for i in group_elem_dict[group_index]])
+            lcs = self.lcs.gen_lcs()
             group_lcs_dict[group_index] = lcs
 
         Jaccard_index_extend_threshold = 0.8
         for i in group_lcs_dict:
-            for j in xrange(i, len(group_lcs_dict)):
+            for j in xrange(i + 1, len(group_lcs_dict)):
                 if not group_lcs_dict[j]:
                     continue
 
                 self.lcs.init(group_lcs_dict[i], group_lcs_dict[j])
                 lcs = self.lcs.gen_lcs()
 
-                Jaccard_index_extend = len(lcs) / min(len(group_elem_dict[i]), len(group_lcs_dict[j]))
+                Jaccard_index_extend = len(lcs) / min(len(group_lcs_dict[i]), len(group_lcs_dict[j]))
                 if Jaccard_index_extend >= Jaccard_index_extend_threshold:
                     group_elem_dict[i] |= group_elem_dict[j]
                     group_elem_dict[j] = set()
@@ -206,7 +209,8 @@ class AuthorityDesc(object):
                 max_score = group_score
                 max_group_index = group_index
 
-        potential_group= sorted(group_elem_dict[max_group_index])
+        potential_group= sorted(group_elem_dict[max_group_index], key=lambda index: len(native_desc_filtered_list[index]))
+        print potential_group
         authority_desc = native_desc_list[potential_group[(len(potential_group) - 1) / 2]]
 
         return authority_desc
@@ -219,8 +223,8 @@ class AuthorityDesc(object):
             print 'uni_str is not an instance of unicodek'
 
         key_sent = u''
-        for sent in uni_str.split(u'\u001a'):
-            if len(sent) > key_sent:
+        for sent in uni_str.split(sep):
+            if len(sent) > len(key_sent):
                 key_sent = sent
 
         return key_sent
