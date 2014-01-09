@@ -43,6 +43,9 @@ class LCS(object):
         """
         """
 
+        if len(args) == 1:
+            args += args
+
         self.seq_list = [list(s) for s in args]
         self.str_comp = self.sep.join(args)
 
@@ -61,7 +64,7 @@ class LCS(object):
         """
 
         #return math.floor((1 - (math.tanh(math.log(len(seq_list) / 100.0)) + 1) / 2.0 * 0.9) * len(seq_list))
-        return len(seq_list)
+        return len(self.seq_list)
 
     def check_cs_existence(self, k):
         """
@@ -109,9 +112,9 @@ class LCS(object):
 
                 cs = self.str_comp[self.suffix_array.SA[i]: ][: k]
                 if cs.find(self.sep) == -1:
-                    cs_dict[cs] = 1
+                    return cs
 
-        return cs_dict.keys()
+        return u''
 
     def gen_lcs(self):
         """
@@ -140,29 +143,13 @@ class LCS(object):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) != 2:
-
-        print 'Usage: __file__ file'.format(__file__)
-        sys.exit(1)
-
-    file = sys.argv[1]
     lcs = LCS()
 
-    seq_list = [unicode('我们的内容内容内容简介：', 'GBK', 'ignore'), unicode('武动乾坤内容简介：', 'GBK', 'ignore')]
-    with open(file) as fp:
-
-        seq_list = []
-        for line in fp:
-
-            line = line.strip('\n')
-            if not line:
-                continue
-
-            seq_list.append(unicode(line, 'GBK', 'ignore'))
-
+    seq_list = [unicode('我们的内容内容内容简介：', 'GBK', 'ignore'),unicode('我们的内容内容内容简介：', 'GBK', 'ignore')]
     if not seq_list:
         print 'seq_list is empty'
         sys.exit(2)
 
     lcs.init(*seq_list)
-    lcs.gen_lcs()
+    result = lcs.gen_lcs()
+    print result.encode('GBK')
