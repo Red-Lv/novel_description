@@ -8,6 +8,7 @@ import re
 import HTMLParser
 
 from halfwidth_fullwidth_transformation.halfwidth_fullwidth_transformation import *
+from dataframe_util import *
 
 
 class HTMLParserExtended(HTMLParser.HTMLParser):
