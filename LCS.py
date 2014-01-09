@@ -158,7 +158,7 @@ if __name__ == '__main__':
     seq_list = [unicode('我们的内容内容内容简介：', 'GBK', 'ignore'),unicode('我们的内容内容内容简介：', 'GBK', 'ignore')]
     if not seq_list:
         print 'seq_list is empty'
-        sys.exit(2)
+        sys.exit(1)
 
     lcs.init(*seq_list)
     result = lcs.gen_lcs()
