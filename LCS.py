@@ -60,7 +60,8 @@ class LCS(object):
         """
         """
 
-        return math.floor((1 - (math.tanh(math.log(len(seq_list) / 100.0)) + 1) / 2.0 * 0.9) * len(seq_list))
+        #return math.floor((1 - (math.tanh(math.log(len(seq_list) / 100.0)) + 1) / 2.0 * 0.9) * len(seq_list))
+        return len(seq_list)
 
     def check_cs_existence(self, k):
         """
