@@ -123,7 +123,7 @@ class AuthorityDesc(object):
             raw_book_name, raw_pen_name, raw_desc = self.fetch_native_desc(site_id, dir_id)
 
             native_desc = self.desc_filter.filter_desc(site_id, *map(lambda uni_str: unicode(uni_str, 'GBK', 'ignore'), [raw_book_name, raw_pen_name, raw_desc]))
-            if not native_desc:
+            if not self.is_valid_desc(native_desc):
                 continue
 
             print '-' * 20
@@ -150,6 +150,15 @@ class AuthorityDesc(object):
         print '\t'.join(map(str, [rid, book_name, pen_name, dir_url, authority_desc]))
 
         return authority_desc
+
+    def is_valid_desc(self, desc):
+        """
+        """
+
+        valid_desc_len_threshold = 1
+        desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w]', '', desc)
+
+        return len(desc_filtered) >= valid_desc_len_threshold
 
     def authority_desc_strategy(self, native_desc_list):
         """
