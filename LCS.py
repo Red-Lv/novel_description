@@ -85,7 +85,7 @@ class LCS(object):
         if not self.threshold:
             self.threshold = len(self.seq_list)
 
-        return len(self.seq_list)
+        return self.threshold
 
     def check_cs_existence(self, k):
         """
