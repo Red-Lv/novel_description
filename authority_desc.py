@@ -152,7 +152,7 @@ class AuthorityDesc(object):
         """
 
         valid_desc_len_threshold = 5
-        desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w]', '', desc)
+        desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w\u0003\u0004]', '', desc)
 
         return len(desc_filtered) >= valid_desc_len_threshold
 
@@ -165,7 +165,7 @@ class AuthorityDesc(object):
         if not native_desc_list:
             return authority_desc
 
-        native_desc_filtered_list = [re.sub(u'[^\u4e00-\u9fa5\w\s]', u'\u001a', native_desc)
+        native_desc_filtered_list = [re.sub(u'[^\u4e00-\u9fa5\w\s\u0003\u0004]', u'\u001a', native_desc)
                                      for native_desc in native_desc_list]
 
         key_sent_list = []
@@ -222,7 +222,48 @@ class AuthorityDesc(object):
         potential_group= sorted(group_elem_dict[max_group_index], key=lambda index: len(native_desc_filtered_list[index]))
         authority_desc = native_desc_list[potential_group[(len(potential_group) - 1) / 2]]
 
+        self.lcs.init(*[native_desc_filtered_list[i] for i in group_elem_dict[max_group_index]])
+        f = lambda x: math.ceil((1 - (math.tanh(math.log(x / 3.0)) + 1) / 2.0 * 0.5) * x)
+        self.lcs.set_cs_threshold(f(len(group_elem_dict[max_group_index])))
+        max_group_lcs = self.lcs.gen()
+
+        max_group_lcs_threshold = len(native_desc_filtered_list[potential_group[(len(potential_group) - 1) / 2]]) * 0.5
+        if len(max_group_lcs) >= max_group_lcs_threshold:
+            for native_desc in native_desc_filtered_list:
+                native_desc_filtered = re.sub(u'[^\u4e00-\u9fa5\w\s\u0003\u0004]', u'', native_desc)
+                if native_desc_filtered.find(max_group_lcs) == -1:
+                    continue
+
+                offset_1 = self.fetch_native_desc_offset(native_desc, max_group_lcs)
+                offset_2 = self.fetch_native_desc_offset(native_desc, native_desc_filtered[native_desc_filtered.find(max_group_lcs) + len(max_group_lcs)])
+
+                authority_desc = native_desc[offset_1: offset_2]
+
         return authority_desc
+
+    def fetch_native_desc_offset(self, native_desc, uni_str):
+        """
+        """
+
+        potential_offset_list = [m.start() for m in re.finditer(uni_str[0], native_desc)]
+        start = -1
+        for offset in potential_offset_list:
+            native_desc_part = native_desc[offset:]
+            native_desc_part_filtered = re.sub(u'[^\u4e00-\u9fa5\w\s\u0003\u0004]', u'', native_desc_part)
+            if native_desc_part_filtered.find(uni_str) != -1:
+                start = offset
+
+        suffix_punc_str = u'\u3009\u300b\u300d\u300f\u3011\u3015\u3017\u3019\u301b\u0029\u005d\u007d\u0020'
+
+        while start >= 0:
+
+            if suffix_punc_str.find(native_desc) == -1:
+                start += 1
+                break
+
+            start -= 1
+
+        return start
 
     def extract_key_sent(self, uni_str, sep):
         """
