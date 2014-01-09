@@ -11,6 +11,8 @@ import MySQLdb
 
 from util import *
 from clu_util import *
+from LCS import *
+
 import filter_desc
 
 
@@ -25,6 +27,8 @@ class AuthorityDesc(object):
         self.rid_list = random.sample(rid_list, 200 if len(rid_list) > 200 else len(rid_list))
         self.desc_filter = filter_desc.DescFilter()
         self.desc_filter.init('./pattern/book_name_pattern.json', './pattern/pen_name_pattern.json', './pattern/desc_pattern.json')
+
+        self.lcs = LCS()
 
         return True
 
@@ -58,12 +62,6 @@ class AuthorityDesc(object):
 
             book_desc_update = self.check_authority_desc(book_name, pen_name, rid)
 
-            '''
-            print 'rid: {0}. book_name: {1}. pen_name: {2}'.format(rid, book_name, pen_name)
-            print 'book_desc_ori: {0}'.format(book_desc)
-            print 'book_desc_upd: {0}'.format(book_desc_update)
-            '''
-
         print 'finish processing'
 
         return True
@@ -76,13 +74,13 @@ class AuthorityDesc(object):
 
         try:
             conn = MySQLdb.connect(host='10.46.7.171', port=4198, user='wise_novelclu_w', passwd='C9l3U4n6M2e1', db='novels_new')
+            conn.set_character_set('GBK')
+            conn.autocommit(True)
         except Exception as e:
             print 'fail to connect to the cluster db. error: {0}'.format(e)
             return authority_info_list
 
         cursor = conn.cursor()
-        cursor.execute('SET NAMES GBK')
-        cursor.execute('SET autocommit=1')
 
         query_sql = 'SELECT rid, book_name, pen_name, description FROM novel_authority_info ' \
                     'WHERE rid = %s AND rank > 0'.format()
@@ -110,7 +108,7 @@ class AuthorityDesc(object):
 
         authority_desc = ''
         cluster_info = self.fetch_cluster_info(book_name, rid)
-        cluster_info = sorted(cluster_info, key=lambda item: item[3], reverse=True)
+        cluster_info = sorted(cluster_info, key=lambda item: item[-1], reverse=True)
 
         if not cluster_info:
             return authority_desc
@@ -121,21 +119,30 @@ class AuthorityDesc(object):
             row = self.fetch_native_desc(site_id, dir_id)
             if not row:
                 continue
-            raw_book_name, raw_pen_name, native_desc = self.fetch_native_desc(site_id, dir_id)
-            native_desc = self.desc_filter.filter_desc(site_id, unicode(raw_book_name, 'GBK'), unicode(raw_pen_name, 'GBK'), unicode(native_desc, 'GBK'))
+
+            raw_book_name, raw_pen_name, raw_desc = self.fetch_native_desc(site_id, dir_id)
+
+            native_desc = self.desc_filter.filter_desc(site_id, *map(lambda uni_str: unicode(uni_str, 'GBK', 'ignore'), [raw_book_name, raw_pen_name, raw_desc]))
             if not native_desc:
                 continue
 
+            print '-' * 20
             print 'site_id: {0}'.format(site_id)
-            print 'dir_id : {0}'.format(dir_id)
- 
-            native_desc = native_desc.replace(u'\u0003', unicode(raw_book_name, 'GBK'))
-            native_desc = native_desc.replace(u'\u0004', unicode(raw_pen_name, 'GBK'))
-            native_desc = native_desc.encode('GBK')
+            print 'dir_id: {0}'.format(dir_id)
+            print 'dir_url: {0}'.format(dir_url)
+            print 'raw_desc: {0}'.format(raw_desc)
+            print 'native_desc: {0}'.format(native_desc.encode('GBK', 'ignore'))
+
+            '''
+            native_desc = native_desc.replace(u'\u0003', unicode(raw_book_name, 'GBK', 'ignore'))
+            native_desc = native_desc.replace(u'\u0004', unicode(raw_pen_name, 'GBK', 'ignore'))
+            '''
+
             native_desc_list.append(native_desc)
-            break
 
         authority_desc = self.authority_desc_strategy(native_desc_list)
+        authority_desc = authority_desc.replace(u'\u0003', book_name)
+        authority_desc = authority_desc.replace(u'\u0004', pen_name)
 
         dir_url = cluster_info[0][2]
         print '\t'.join(map(str, [rid, book_name, pen_name, dir_url, authority_desc]))
@@ -151,9 +158,72 @@ class AuthorityDesc(object):
         if not native_desc_list:
             return authority_desc
 
-        authority_desc = native_desc_list[0]
+        native_desc_filtered_list = [re.sub(u'[^\u4e00-\u9fa5\w\s]', u'001a', native_desc) for native_desc in native_desc_list]
+
+        key_sent_list = []
+        key_sent_dict = {}
+        group_elem_dict = {}
+        for i, native_desc in enumerate(native_desc_filtered_list):
+
+            key_sent = self.extract_key_sent(native_desc, u'\u001a')
+            key_sent_list.append(key_sent)
+
+            group_index = key_sent_dict.get(key_sent, len(key_sent_dict))
+            key_sent_dict.setdefault(key_sent, group_index)
+            group_elem_dict.setdefault(group_index, set())
+            group_elem_dict[group_index].add(i)
+
+        native_desc_filtered_list = [re.sub(u'\s+', '', native_desc.replace(u'001a', u'')) for native_desc in native_desc_filtered_list]
+        group_lcs_dict = {}
+        for group_index in group_elem_dict:
+
+            lcs = self.lcs.init(*[native_desc_list[i] for i in group_elem_dict[i]])
+            group_lcs_dict[group_index] = lcs
+
+        Jaccard_index_extend_threshold = 0.8
+        for i in group_lcs_dict:
+            for j in xrange(i, len(group_lcs_dict)):
+                if not group_lcs_dict[j]:
+                    continue
+
+                self.lcs.init(group_lcs_dict[i], group_lcs_dict[j])
+                lcs = self.lcs.gen_lcs()
+
+                Jaccard_index_extend = len(lcs) / min(len(group_elem_dict[i]), len(group_lcs_dict[j]))
+                if Jaccard_index_extend >= Jaccard_index_extend_threshold:
+                    group_elem_dict[i] |= group_elem_dict[j]
+                    group_elem_dict[j] = set()
+
+        max_score = 0
+        max_group_index = -1
+        for group_index in group_elem_dict:
+
+            def calc_group_score(elem_set):
+                return sum(map(lambda index: len(native_desc_filtered_list) - index, elem_set))
+
+            group_score = calc_group_score(group_elem_dict[group_index])
+            if group_score > max_score:
+                max_score = group_score
+                max_group_index = group_index
+
+        potential_group= sorted(group_elem_dict[max_group_index])
+        authority_desc = native_desc_list[potential_group[(len(potential_group) - 1) / 2]]
 
         return authority_desc
+
+    def extract_key_sent(self, uni_str, sep):
+        """
+        """
+
+        if not isinstance(uni_str, unicode):
+            print 'uni_str is not an instance of unicodek'
+
+        key_sent = u''
+        for sent in uni_str.split(u'\u001a'):
+            if len(sent) > key_sent:
+                key_sent = sent
+
+        return key_sent
 
     def fetch_cluster_info(self, book_name, rid):
         """
