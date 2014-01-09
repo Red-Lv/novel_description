@@ -67,13 +67,24 @@ class LCS(object):
         self.seq_list = []
         self.start_offset_list = []
 
+        self.threshold = None
+
         return True
+
+    def set_cs_threshold(self, threshold):
+        """
+        """
+
+        self.threshold = threshold
 
     def cal_cs_threshold(self):
         """
         """
 
         #return math.floor((1 - (math.tanh(math.log(len(seq_list) / 100.0)) + 1) / 2.0 * 0.9) * len(seq_list))
+        if not self.threshold:
+            self.threshold = len(self.seq_list)
+
         return len(self.seq_list)
 
     def check_cs_existence(self, k):
