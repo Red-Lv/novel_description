@@ -122,6 +122,30 @@ class LCS(object):
 
         max_len = max(map(len, self.seq_list))
         left, right = 1, max_len
+        lcs = u''
+
+        while left <= right:
+
+            mid = (left + right) / 2
+            cs = self.check_cs_existence(mid)
+            if cs:
+                left = mid + 1
+                lcs = cs
+            else:
+                right = mid - 1
+
+        return lcs
+
+    def gen_cs(self):
+        """
+        """
+
+        self.suffix_array.gen_height_array()
+        #self.suffix_array.dump_suffix_array()
+        #self.suffix_array.dump_height_array()
+
+        max_len = max(map(len, self.seq_list))
+        left, right = 1, max_len
         
         while left <= right:
 
@@ -175,7 +199,7 @@ if __name__ == '__main__':
         seq_list = []
         for line in fp:
 
-            line = line.strip()
+            line = line.strip('\n')
             if not line:
                 continue
 
