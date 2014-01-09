@@ -55,3 +55,10 @@ def html_element_filter(uni_str):
     data = data.strip()
 
     return data
+
+def extract_uni_str(uni_str, regex=u'[\u4e00-\u9fa5\w]+', sep=u''):
+    """
+    """
+
+    return sep.join([m.group() for m in re.finditer(regex, uni_str)])
+
