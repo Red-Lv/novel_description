@@ -33,15 +33,13 @@ class LCS(object):
 
         self.suffix_array = SuffixArraybyDC3()
 
-        self.str_comp = u''
-        self.sep = u'\u001a'
-
-        self.seq_list = []
-        self.start_offset_list = []
+        self.reset()
 
     def init(self, *args):
         """
         """
+
+        self.reset()
 
         if len(args) == 1:
             args += args
@@ -58,7 +56,19 @@ class LCS(object):
         self.suffix_array.init(self.str_comp)
 
         return True
-    
+
+    def reset(self):
+        """
+        """
+
+        self.str_comp = u''
+        self.sep = u'\u001a'
+
+        self.seq_list = []
+        self.start_offset_list = []
+
+        return True
+
     def cal_cs_threshold(self):
         """
         """
