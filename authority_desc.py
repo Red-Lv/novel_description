@@ -224,7 +224,8 @@ class AuthorityDesc(object):
         authority_desc = native_desc_list[potential_group[(len(potential_group) - 1) / 2]]
 
         self.lcs.init(*[native_desc_filtered_list[i] for i in group_elem_dict[max_group_index]])
-        f = lambda x: math.ceil((1 - (math.tanh(math.log(x / 3.0)) + 1) / 2.0 * 0.5) * x)
+        f = lambda x: math.floor((1 - (math.tanh(math.log(x / 3.0)) + 1) / 2.0 * 0.5) * x)
+        print f(len(group_elem_dict[max_group_index]))
         self.lcs.set_cs_threshold(f(len(group_elem_dict[max_group_index])))
         max_group_lcs = self.lcs.gen_lcs()
 
@@ -235,8 +236,8 @@ class AuthorityDesc(object):
                 if native_desc_filtered.find(max_group_lcs) == -1:
                     continue
 
-                start = self.fetch_native_desc_start(native_desc, max_group_index)
-                end = self.fetch_native_desc_end(native_desc, max_group_index)
+                start = self.fetch_native_desc_start(native_desc, max_group_lcs)
+                end = self.fetch_native_desc_end(native_desc, max_group_lcs)
 
                 authority_desc = native_desc[start: end + 1]
 
@@ -252,10 +253,10 @@ class AuthorityDesc(object):
         for offset in potential_offset_list:
 
             native_desc_part = native_desc[offset:]
-            native_desc_part_filtered = extract_uni_str(native_desc_part, u'[\u004e-\u9fa5\w\u0003\u0004]+')
-            if native_desc_part_filtered.find(uni_str) != -1:
+            native_desc_part_filtered = extract_uni_str(native_desc_part, u'[\u4e00-\u9fa5\w\u0003\u0004]+')
+            if native_desc_part_filtered[: len(uni_str)] == uni_str:
                 start = offset
-
+        
         punc_stack = list()
         punc_stack.append(start)
         for i in xrange(start):
@@ -266,15 +267,18 @@ class AuthorityDesc(object):
                 punc_stack.append(i)
 
             if ch in right_punc_dict:
-                top = punc_stack[-1]
+                top = native_desc[punc_stack[-1]]
                 if right_punc_dict.get(ch) == left_punc_dict.get(top):
                     punc_stack.pop()
 
+        start = punc_stack.pop()
         start -= 1
         while start >= 0:
 
-            if not extract_uni_str(native_desc[start]):
+            if not extract_uni_str(native_desc[start], u'[\u4e00-\u9fa5\w\u0003\u0004]+'):
                 break
+            
+            start -= 1
 
         start += 1
         return start
@@ -289,6 +293,7 @@ class AuthorityDesc(object):
         start = self.fetch_native_desc_start(native_desc_reversed, uni_str_reversed, right_punc_dict, left_punc_dict)
 
         end = len(native_desc) - 1 - start
+
         return end
 
     def extract_key_sent(self, uni_str, sep):
