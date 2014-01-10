@@ -225,7 +225,6 @@ class AuthorityDesc(object):
 
         self.lcs.init(*[native_desc_filtered_list[i] for i in group_elem_dict[max_group_index]])
         f = lambda x: math.floor((1 - (math.tanh(math.log(x / 3.0)) + 1) / 2.0 * 0.5) * x)
-        print f(len(group_elem_dict[max_group_index]))
         self.lcs.set_cs_threshold(f(len(group_elem_dict[max_group_index])))
         max_group_lcs = self.lcs.gen_lcs()
 
@@ -240,6 +239,7 @@ class AuthorityDesc(object):
                 end = self.fetch_native_desc_end(native_desc, max_group_lcs)
 
                 authority_desc = native_desc[start: end + 1]
+                break
 
         if authority_desc:
             if re.search(authority_desc[-1], '\S+'):
