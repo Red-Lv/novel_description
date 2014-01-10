@@ -241,6 +241,12 @@ class AuthorityDesc(object):
 
                 authority_desc = native_desc[start: end + 1]
 
+        if authority_desc:
+            if re.search(authority_desc[-1], '\S+'):
+                authority_desc += u'...'
+            else:
+                authority_desc += u'\u2026'
+
         return authority_desc
 
     def fetch_native_desc_start(self, native_desc, uni_str, left_punc_dict=left_punc_dict, right_punc_dict=right_punc_dict):
