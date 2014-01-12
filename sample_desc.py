@@ -73,8 +73,8 @@ def sample_description(site_id, sample_size):
 
         dir_id = row[0]
         row = row[1:]
-        row = map(lambda s: unicode(s.strip(), 'GBK', 'ignore'), row)
-        raw_book_name, raw_pen_name, description = [item.lower() for item in row]
+        row = map(lambda s: unicode(s.strip(), 'GBK', 'ignore').lower(), row)
+        raw_book_name, raw_pen_name, description = row
 
         if not description:
             continue
