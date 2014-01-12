@@ -73,7 +73,7 @@ def sample_description(site_id, sample_size):
 
         dir_id = row[0]
         row = row[1:]
-        row = map(lambda s: unicode(s.strip(), 'GBK', 'ignore').lower(), row)
+        row = map(lambda s: unicode(s.strip(), 'GBK', 'ignore'), row)
         raw_book_name, raw_pen_name, description = row
 
         if not description:
@@ -85,6 +85,7 @@ def sample_description(site_id, sample_size):
         dir_dict[dir_id] = 1
 
         description = u''.join([fullwidth_to_halfwidth(uni_chr) for uni_chr in description])
+        raw_book_name, raw_pen_name, description = map(unicode.lower, [raw_book_name, raw_pen_name, description])
         data = description
         while True:
             _data = data
